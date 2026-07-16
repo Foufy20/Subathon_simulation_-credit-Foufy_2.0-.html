@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulation de Subathon 🎬</title>
+<style>
+  body {
+    background: radial-gradient(circle at top, #1e1e2f, #121212);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  #timer {
+    font-size: 4rem;
+    margin: 20px 0;
+  }
+  button {
+    background: #9146FF;
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #772ce8;
+  }
+  #log {
+    margin-top: 30px;
+    height: 150px;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 10px;
+    font-family: monospace;
+  }
+  .sub {
+    color: #00FF88;
+  }
+  .system {
+    color: #888;
+  }
+  
+  .credit {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #666;
+  z-index: 1000;
+}
+</style>
+</head>
+<body>
+
+<h1>🎉 Simulation de Subathon 🎉</h1>
+<div id="timer">05:00</div>
+<button id="subButton">💜 Donner un sub</button>
+
+<div id="log"></div>
+
+<a class=credit>Crédit HTML : Foufy_2.0<a>
+
+<script>
+let timer = 300; // 5 minutes max
+let maxTime = 300;
+let log = document.getElementById("log");
+let timerDisplay = document.getElementById("timer");
+
+// Fonction d’affichage du temps
+function updateDisplay() {
+  let minutes = Math.floor(timer / 60);
+  let seconds = timer % 60;
+  timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Ajoute un message au log
+function addLog(message, type="system") {
+  let entry = document.createElement("div");
+  entry.classList.add(type);
+  entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+  log.prepend(entry);
+}
+
+// Simule un sub venant du tchat
+function simulateChatSub() {
+  // Chance légèrement augmentée mais pas trop
+  const chance = Math.random();
+  if (chance < 0.05) { // 5% de chance chaque tick (~toutes les 3s)
+    let subsGiven = Math.random() < 0.8 ? 1 : Math.floor(Math.random() * 4) + 2; // 1 à 5 subs max
+    for (let i = 0; i < subsGiven; i++) addSub(false);
+  }
+}
+
+// Fonction pour ajouter un sub
+function addSub(fromUser = true) {
+  if (timer < maxTime) {
+    timer += 30;
+    if (timer > maxTime) timer = maxTime;
+  }
+  updateDisplay();
+  addLog(fromUser ? "Vous avez donné un sub 💜 (+30s)" : "Le tchat a offert un sub 💜 (+30s)", "sub");
+}
+
+// Décompte du timer
+setInterval(() => {
+  if (timer > 0) {
+    timer--;
+    updateDisplay();
+  } else {
+    addLog("⏰ Le Subathon est terminé !", "system");
+  }
+}, 1000);
+
+// Simulation aléatoire du tchat
+setInterval(() => {
+  if (timer > 0) simulateChatSub();
+}, 3000); // toutes les 3 secondes, vérifie si un sub arrive
+
+// Bouton pour sub
+document.getElementById("subButton").addEventListener("click", () => {
+  addSub(true);
+});
+
+// Initialisation
+updateDisplay();
+addLog("🎬 Début du Subathon !");
+</script>
+</body>
+</html>
